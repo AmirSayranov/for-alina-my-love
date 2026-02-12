@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine Puzzle</title>
+  <style>
+    :root{
+      --text:#111;
+      --muted:#666;
+      --bg:#fff;
+      --btn:#111;
+      --btnText:#fff;
+      --btn2:#f2f2f2;
+      --btn2Text:#111;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow:hidden;
+    }
+    .wrap{
+      height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      text-align:center;
+    }
+    .box{
+      width:min(880px, 94vw);
+    }
+    h1{
+      margin:0 0 14px;
+      font-size: clamp(34px, 6vw, 56px);
+      font-weight:800;
+      letter-spacing:-0.03em;
+    }
+    .sub{
+      margin: 8px 0 14px;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.5;
+    }
+    .img{
+      width: min(280px, 70vw);
+      height:auto;
+      margin: 8px auto 10px;
+      display:block;
+      border-radius:18px;
+      user-select:none;
+      -webkit-user-drag:none;
+    }
+    .question{
+      margin: 12px 0 14px;
+      font-size: 20px;
+      font-weight:700;
+    }
+
+    .btnArea{
+      position: relative;
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      align-items:center;
+      min-height: 90px;
+      margin-top: 6px;
+    }
+    button{
+      border:0;
+      padding: 14px 22px;
+      border-radius: 14px;
+      font-weight: 800;
+      cursor:pointer;
+      font-size:16px;
+      transition: transform .12s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #yesBtn{
+      background:var(--btn);
+      color:var(--btnText);
+    }
+    #noBtn{
+      background:var(--btn2);
+      color:var(--btn2Text);
+      position: relative;
+    }
+
+    .hidden{display:none}
+
+    /* =================== Screen 2 (Final) UI =================== */
+    .finalTop{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin: 6px 0 12px;
+    }
+    .topBtn{
+      background:#fff;
+      color:#111;
+      border:1px solid rgba(0,0,0,.14);
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+    }
+    .final h2{
+      margin: 6px 0 10px;
+      font-size: clamp(32px, 4.8vw, 54px);
+      letter-spacing:-0.02em;
+      font-weight:900;
+    }
+    .finalBigText{
+      font-size: clamp(17px, 2.4vw, 22px);
+      line-height:1.5;
+      color:#222;
+      margin: 6px auto 14px;
+      max-width: 52ch;
+    }
+    /* котик больше */
+    .catBig{
+      width: min(560px, 94vw);
+      border-radius: 22px;
+    }
+
+    .reset{
+      margin-top: 14px;
+      background: #f2f2f2;
+      color:#111;
+      border:1px solid rgba(0,0,0,.10);
+    }
+
+    .sig{
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* =================== Screen 3 (Letter) =================== */
+    .letterWrap{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      text-align:left;
+      max-height: 78vh;
+      overflow:auto;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,.10);
+      box-shadow: 0 16px 36px rgba(0,0,0,.08);
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(6px);
+    }
+    .letterTitle{
+      font-size: clamp(26px, 4vw, 42px);
+      font-weight: 950;
+      letter-spacing: -0.02em;
+      margin: 0;
+      text-align:center;
+    }
+    .letterText{
+      font-size: 18px;
+      line-height: 1.7;
+      color:#222;
+      white-space: pre-line;
+      margin: 0;
+    }
+    .letterBtns{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 4px;
+    }
+    .backBtn{
+      background:#111;
+      color:#fff;
+    }
+    .smallHint{
+      text-align:center;
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    /* =================== PARTY: Djokovic =================== */
+    .dj-float{
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0;
+      animation: djPop var(--dur, 4200ms) ease forwards;
+      transform-origin: center;
+      will-change: transform, opacity;
+      filter: saturate(1.25) contrast(1.15) brightness(1.05) drop-shadow(0 12px 20px rgba(0,0,0,.20));
+    }
+    @keyframes djPop{
+      0%   { opacity:0; transform: translateY(12px) scale(.55) rotate(var(--rot, 0deg)); }
+      15%  { opacity:1; }
+      70%  { opacity:1; transform: translateY(0) scale(1) rotate(calc(var(--rot, 0deg) + 8deg)); }
+      100% { opacity:0; transform: translateY(-10px) scale(1.08) rotate(calc(var(--rot, 0deg) + 18deg)); }
+    }
+
+    /* =================== PARTY: Hearts (BIGGER + BRIGHTER) =================== */
+    .heart{
+      position: fixed;
+      pointer-events: none;
+      z-index: 998;
+      will-change: transform, opacity;
+      opacity: 0;
+      animation: heartFly var(--hdur, 3000ms) ease-out forwards;
+      filter:
+        saturate(1.9)
+        contrast(1.35)
+        brightness(1.25)
+        drop-shadow(0 10px 16px rgba(0,0,0,.14))
+        drop-shadow(0 0 18px rgba(255,0,90,.22));
+    }
+    @keyframes heartFly{
+      0%{ opacity: 0; transform: translate(0, 0) scale(var(--hs, 1)) rotate(var(--hr, 0deg)); }
+      12%{ opacity: 1; }
+      100%{
+        opacity: 0;
+        transform: translate(var(--hx, 0px), var(--hy, -520px))
+                   scale(calc(var(--hs, 1) * 1.25))
+                   rotate(calc(var(--hr, 0deg) + 55deg));
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .dj-float, .heart{ animation-duration: 1ms !important; }
+    }
+
+    /* =================== LOADER + PASSWORD GATE =================== */
+    .gate{
+      position: fixed;
+      inset: 0;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(900px 400px at 50% 25%, rgba(255, 0, 100, .08), transparent 60%),
+        radial-gradient(700px 360px at 20% 75%, rgba(0, 120, 255, .07), transparent 65%),
+        #fff;
+      z-index: 2000;
+      padding: 22px;
+    }
+    .card{
+      width: min(560px, 94vw);
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 22px;
+      box-shadow: 0 18px 44px rgba(0,0,0,.10);
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(8px);
+      padding: 18px 18px 16px;
+      text-align: center;
+    }
+    .brand{
+      font-weight: 950;
+      letter-spacing: -0.03em;
+      font-size: clamp(26px, 4.5vw, 40px);
+      margin: 0 0 6px;
+    }
+    .brandSub{
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 15px;
+    }
+    .spinner{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 4px solid rgba(0,0,0,.10);
+      border-top-color: rgba(0,0,0,.55);
+      margin: 10px auto 12px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin{ to { transform: rotate(360deg);} }
+
+    .progress{
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.06);
+      overflow:hidden;
+      margin: 10px 0 6px;
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: #111;
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+    .pct{
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 12px;
+    }
+
+    .field{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .input{
+      flex: 1 1 240px;
+      max-width: 320px;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.14);
+      font-size: 16px;
+      outline: none;
+    }
+    .enterBtn{
+      background:#111;
+      color:#fff;
+      border-radius:14px;
+      padding: 14px 18px;
+      font-weight: 900;
+    }
+    .hint{
+      margin: 10px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .error{
+      margin: 10px 0 0;
+      font-size: 13px;
+      color: #b00020;
+      display:none;
+    }
+    .shake{
+      animation: shake 420ms ease;
+    }
+    @keyframes shake{
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADER + PASSWORD GATE -->
+  <div class="gate" id="gate">
+    <div class="card" id="gateCard">
+      <div class="brand">One small surprise 🤍</div>
+      <div class="brandSub">Before you enter… there’s a tiny secret.</div>
+
+      <div class="spinner" id="spinner"></div>
+      <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
+      <p class="pct" id="pct">Loading… 0%</p>
+
+      <div id="passwordBlock" class="hidden">
+        <div class="brandSub" style="margin-top:6px">
+          Enter the password to open the page
+        </div>
+
+        <div class="field">
+          <input class="input" id="passInput" type="password" placeholder="Password" autocomplete="off" />
+          <button class="enterBtn" id="enterBtn">Enter</button>
+        </div>
+
+        <p class="hint" id="hint">Hint: a word you would guess 😄</p>
+        <p class="error" id="error">Wrong password. Try again.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- =================== SCREEN 1 =================== -->
+    <div class="box" id="screen1">
+      <h1>Dear Alina...</h1>
+
+      <img class="img" alt="cute" src="https://ethanfangg.github.io/valentine-puzzle/images/full-image.png">
+
+      <div class="sub">...you complete me.</div>
+
+      <div class="question">Will you be my Valentine?</div>
+
+      <div class="btnArea">
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+      </div>
+
+      <div class="sig">Love, Amir</div>
+    </div>
+
+    <!-- =================== SCREEN 2 (FINAL) =================== -->
+    <div class="box final hidden" id="screen2">
+      <div class="finalTop">
+        <button class="topBtn" id="whyBtn">Why do I love you?</button>
+      </div>
+
+      <h2>Yay, I can't wait! 🤍</h2>
+
+      <div class="finalBigText">
+        Today you said “Yes” — and my whole world got brighter.
+        I made this little page just to see you smile.
+        You are my favorite person, my calm, and my excitement — all at once.
+      </div>
+
+      <!-- котик (safe-zone) -->
+      <img id="catGif" class="img catBig" alt="gif" src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif">
+
+      <button class="reset" id="resetBtn">Reset</button>
+    </div>
+
+    <!-- =================== SCREEN 3 (LETTER) =================== -->
+    <div class="box hidden" id="screen3">
+      <div class="letterWrap">
+        <h3 class="letterTitle">Why I love you?</h3>
+
+        <p class="letterText" id="letterText">
+Alina,
+
+I don’t love you for one single reason — I love you for a hundred small things that somehow feel like one big miracle.
+
+1) I love the way you make ordinary moments feel warm and alive.
+2) I love your smile — it changes the whole atmosphere around you.
+3) I love your strength. You handle life with a beautiful kind of courage.
+4) I love your softness too — the part of you that cares, notices, and holds people gently.
+5) I love that you inspire me. You make me want to be better, calmer, kinder, braver.
+
+When you talk about the things you love — especially tennis — your eyes light up. And I swear, that’s my favorite view in the world.
+
+Thank you for being you.
+Thank you for choosing me.
+And if love is a match — then with you I always want to play the next set.
+
+Forever yours,
+Amir ❤️
+        </p>
+
+        <p class="smallHint">Tip: you can edit this text inside the HTML anytime.</p>
+
+        <div class="letterBtns">
+          <button class="backBtn" id="backBtn">Back</button>
+          <button class="reset" id="resetBtn2">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =================== PASSWORD SETTINGS ===================
+       Для сюрприза это ок.
+       Если нужна настоящая защита, нужен сервер/edge (скажу как).
+    ========================================================== */
+    const SITE_PASSWORD = "alina"; // <-- поменяйте пароль здесь
+    const HINT_TEXT = "Hint: her name 😉"; // <-- подсказка (можно поменять)
+
+    const gate = document.getElementById('gate');
+    const gateCard = document.getElementById('gateCard');
+    const spinner = document.getElementById('spinner');
+    const bar = document.getElementById('bar');
+    const pct = document.getElementById('pct');
+    const passwordBlock = document.getElementById('passwordBlock');
+    const passInput = document.getElementById('passInput');
+    const enterBtn = document.getElementById('enterBtn');
+    const hint = document.getElementById('hint');
+    const error = document.getElementById('error');
+
+    hint.textContent = HINT_TEXT;
+
+    // already unlocked?
+    const unlocked = localStorage.getItem('valentine_unlocked') === '1';
+
+    function openSite(){
+      gate.style.display = 'none';
+    }
+
+    function fail(){
+      error.style.display = 'block';
+      gateCard.classList.remove('shake');
+      void gateCard.offsetWidth;
+      gateCard.classList.add('shake');
+      passInput.focus();
+      passInput.select();
+    }
+
+    function tryEnter(){
+      const v = (passInput.value || "").trim();
+      if (v === SITE_PASSWORD){
+        localStorage.setItem('valentine_unlocked', '1');
+        openSite();
+      } else {
+        fail();
+      }
+    }
+
+    enterBtn.addEventListener('click', tryEnter);
+    passInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') tryEnter();
+    });
+
+    // fake loading (nice vibe)
+    if (unlocked){
+      openSite();
+    } else {
+      let progress = 0;
+      const t = setInterval(() => {
+        progress = Math.min(100, progress + Math.floor(Math.random()*10) + 5);
+        bar.style.width = progress + '%';
+        pct.textContent = `Loading… ${progress}%`;
+
+        if (progress >= 100){
+          clearInterval(t);
+          spinner.style.display = 'none';
+          pct.textContent = "Ready. Enter password ↓";
+          passwordBlock.classList.remove('hidden');
+          passInput.focus();
+        }
+      }, 220);
+    }
+
+    /* =================== YOUR ORIGINAL LOGIC =================== */
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn  = document.getElementById('noBtn');
+
+    const screen1 = document.getElementById('screen1');
+    const screen2 = document.getElementById('screen2');
+    const screen3 = document.getElementById('screen3');
+
+    const whyBtn = document.getElementById('whyBtn');
+    const backBtn = document.getElementById('backBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resetBtn2 = document.getElementById('resetBtn2');
+
+    const catGif = document.getElementById('catGif');
+
+    function rectsIntersect(a, b){
+      return !(
+        a.right  <= b.left ||
+        a.left   >= b.right ||
+        a.bottom <= b.top ||
+        a.top    >= b.bottom
+      );
+    }
+
+    function getCatSafeRect(pad = 28){
+      if (!catGif) return null;
+      if (screen2.classList.contains('hidden')) return null;
+      const r = catGif.getBoundingClientRect();
+      return {
+        left:   r.left - pad,
+        top:    r.top - pad,
+        right:  r.right + pad,
+        bottom: r.bottom + pad
+      };
+    }
+
+    function moveNoAway(pointerX=null, pointerY=null){
+      const pad = 12;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      const b = noBtn.getBoundingClientRect();
+
+      const maxX = vw - b.width  - pad;
+      const maxY = vh - b.height - pad;
+
+      let x = Math.random() * maxX + pad;
+      let y = Math.random() * maxY + pad;
+
+      if(pointerX !== null && pointerY !== null){
+        const cx = b.left + b.width/2;
+        const cy = b.top + b.height/2;
+        const dx = cx - pointerX;
+        const dy = cy - pointerY;
+        const len = Math.max(1, Math.hypot(dx,dy));
+        const ux = dx/len;
+        const uy = dy/len;
+        const jump = 180;
+
+        x = Math.max(pad, Math.min(maxX, b.left + ux*jump));
+        y = Math.max(pad, Math.min(maxY, b.top  + uy*jump));
+      }
+
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = x + 'px';
+      noBtn.style.top  = y + 'px';
+      noBtn.style.zIndex = 50;
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      if (screen1.classList.contains('hidden')) return;
+      const b = noBtn.getBoundingClientRect();
+      const cx = b.left + b.width/2;
+      const cy = b.top + b.height/2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+      if(dist < 90) moveNoAway(e.clientX, e.clientY);
+    });
+
+    noBtn.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      moveNoAway(t.clientX, t.clientY);
+      e.preventDefault();
+    }, { passive:false });
+
+    noBtn.addEventListener('click', (e) => {
+      moveNoAway();
+      e.preventDefault();
+    });
+
+    const djokovicGifs = [
+      "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZTN0czExcHFvNHFkMmt3emJ1bXRmYm83M3RjamViNHI2eDBmZjZsaiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/mPIROKHWddyuIMQHVu/giphy.gif",
+      "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjFhdjQ3bXRkMDJsa29zMnUwa3lpZ3N2ZWhjZ3pmYTJ6d3RsMTNjdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2vBIaOa6X7VGQOOeet/giphy.gif",
+      "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbHkxYjVseHdrMW9mbmg4YTAyM2xxamVlbmlkbzVjcTRrcTNjOGl1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT5LMt6qp5dLmEMZTW/giphy.gif",
+      "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWpqaHJ1OGx2YzFhOW05ODFib2Z6ZHBxZGY0bjkyNDNrbmpnYnVhYSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Fk7ekgDbcK9gsQPm9L/giphy.gif",
+      "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXh4NDdmeGswNnVzMmV6MTNoemxrNzlkMGlrMXNqcXoyanR5YXFiNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zzNT9sBZ0HEEyNOwTT/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOThzOW5mZ2Vzam5rcWNudzZnNWhhZHJjZWV3amhxbW52bDJ0cTEwZyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/idnMwaSnOYdbxkfyJm/giphy.gif"
+    ];
+
+    const hearts = ["💖","💗","💓","💞","💘","❤️","🤍","😍","✨"];
+
+    let djInterval = null;
+    let heartInterval = null;
+
+    const MAX_DJ = 14;
+    const MAX_HEARTS = 40;
+
+    function countOnScreen(selector){
+      return document.querySelectorAll(selector).length;
+    }
+
+    function spawnDjokovic(){
+      if (countOnScreen(".dj-float") >= MAX_DJ) return;
+
+      const img = document.createElement("img");
+      img.src = djokovicGifs[Math.floor(Math.random()*djokovicGifs.length)];
+      img.className = "dj-float";
+
+      const size = Math.floor(Math.random() * 140) + 90;
+      const dur  = Math.floor(Math.random() * 2200) + 3400;
+      const rot  = (Math.random() * 26 - 13).toFixed(2) + "deg";
+
+      img.style.width = size + "px";
+      img.style.setProperty("--dur", dur + "ms");
+      img.style.setProperty("--rot", rot);
+
+      const safe = getCatSafeRect(28);
+
+      let placed = false;
+      for (let i = 0; i < 18; i++){
+        const x = Math.random() * (window.innerWidth  - size);
+        const y = Math.random() * (window.innerHeight - size);
+
+        const djRect = { left:x, top:y, right:x+size, bottom:y+size };
+        if (safe && rectsIntersect(djRect, safe)) continue;
+
+        img.style.left = Math.max(8, x) + "px";
+        img.style.top  = Math.max(8, y) + "px";
+        placed = true;
+        break;
+      }
+      if (!placed) return;
+
+      document.body.appendChild(img);
+      setTimeout(() => img.remove(), dur + 50);
+    }
+
+    function spawnHeart(){
+      if (countOnScreen(".heart") >= MAX_HEARTS) return;
+
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+
+      const size = (Math.random() * 24 + 28).toFixed(0);
+      const dur  = Math.floor(Math.random() * 1500) + 2400;
+      const startX = Math.random() * window.innerWidth;
+      const driftX = (Math.random() * 300 - 150).toFixed(0) + "px";
+      const flyY   = (Math.random() * 280 + 460).toFixed(0) + "px";
+
+      const rot = (Math.random() * 60 - 30).toFixed(0) + "deg";
+      const scale = (Math.random() * 0.7 + 1.0).toFixed(2);
+
+      h.style.left = startX + "px";
+      h.style.top  = (window.innerHeight + 40) + "px";
+      h.style.fontSize = size + "px";
+      h.style.setProperty("--hdur", dur + "ms");
+      h.style.setProperty("--hx", driftX);
+      h.style.setProperty("--hy", "-" + flyY);
+      h.style.setProperty("--hr", rot);
+      h.style.setProperty("--hs", scale);
+
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), dur + 60);
+    }
+
+    function startParty(){
+      stopParty();
+
+      djInterval = setInterval(() => {
+        if (screen2.classList.contains('hidden')) return;
+        spawnDjokovic();
+        if (Math.random() < 0.25) spawnDjokovic();
+      }, 650);
+
+      heartInterval = setInterval(() => {
+        if (screen2.classList.contains('hidden')) return;
+        spawnHeart();
+        if (Math.random() < 0.55) spawnHeart();
+      }, 220);
+    }
+
+    function stopParty(){
+      if (djInterval) clearInterval(djInterval);
+      if (heartInterval) clearInterval(heartInterval);
+      djInterval = null;
+      heartInterval = null;
+      document.querySelectorAll(".dj-float, .heart").forEach(el => el.remove());
+    }
+
+    function goToScreen(n){
+      screen1.classList.add('hidden');
+      screen2.classList.add('hidden');
+      screen3.classList.add('hidden');
+
+      if(n === 1) screen1.classList.remove('hidden');
+      if(n === 2) screen2.classList.remove('hidden');
+      if(n === 3) screen3.classList.remove('hidden');
+    }
+
+    yesBtn.addEventListener('click', () => {
+      goToScreen(2);
+      startParty();
+    });
+
+    whyBtn.addEventListener('click', () => {
+      stopParty();
+      goToScreen(3);
+      document.querySelector('.letterWrap').scrollTop = 0;
+    });
+
+    backBtn.addEventListener('click', () => {
+      goToScreen(2);
+      startParty();
+    });
+
+    function resetAll(){
+      stopParty();
+      noBtn.style.position = 'relative';
+      noBtn.style.left = '';
+      noBtn.style.top = '';
+      noBtn.style.zIndex = '';
+      goToScreen(1);
+    }
+
+    resetBtn.addEventListener('click', resetAll);
+    resetBtn2.addEventListener('click', resetAll);
+  </script>
+</body>
+</html>
