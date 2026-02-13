@@ -118,10 +118,20 @@
       margin: 6px auto 14px;
       max-width: 52ch;
     }
-    /* котик больше */
+
+    /* котик больше + ЖЁСТКОЕ ЦЕНТРИРОВАНИЕ */
     .catBig{
       width: min(560px, 94vw);
       border-radius: 22px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media (max-width: 600px){
+      .catBig{
+        width: 92vw;
+        max-width: 92vw;
+      }
     }
 
     .reset{
@@ -422,22 +432,23 @@
 Я люблю тебя не за одну причину — я люблю тебя за сотни маленьких вещей, которые вместе ощущаются как одно большое чудо.
 
 1) Я люблю то, как ты умеешь превращать обычные моменты в тёплые и живые.
-2) Я люблю твою улыбку — она меняет всё вокруг.
+2) Я люблю твою улыбку - она меняет всё вокруг.
 3) Я люблю твою силу. Ты справляешься с жизнью с красивой смелостью.
-4) Я люблю твою нежность — то, как ты заботишься, замечаешь детали и бережно относишься к людям.
+4) Я люблю твою нежность - то, как ты заботишься, замечаешь детали и бережно относишься к людям.
 5) Я люблю то, как ты вдохновляешь меня. Рядом с тобой я хочу быть лучше, спокойнее, добрее и сильнее.
+6) Я люблю тебя за твою неземную красоту, которая каждый раз сводит меня с ума...
 
-Когда ты говоришь о том, что любишь — особенно про теннис — у тебя загораются глаза. И честно… это мой самый любимый вид на свете.
+Большой кайф мне доставляет то, что ты так любишь теннис!!!
 
-Спасибо, что ты есть.
+Спасибо, что ты есть. Могу бесконечно продолжать список, но думаю, ты и так знаешь, что я тебя безумно люблю!!
 Спасибо, что выбираешь меня.
 И если любовь — это матч, то с тобой я всегда хочу играть следующий сет.
 
 Всегда твой,
-Амир ❤️
+Амирчик ❤️
         </p>
 
-        <p class="smallHint">Попробуй нажать кнопку NO в начале :)))</p>
+        <p class="smallHint">P.S. Этот текст можно менять прямо в HTML в любой момент.</p>
 
         <div class="letterBtns">
           <button class="backBtn" id="backBtn">Назад</button>
@@ -448,77 +459,77 @@
   </div>
 
   <script>
-/* =================== PASSWORD SETTINGS =================== */
-const SITE_PASSWORD = "Алина"; // пароль (любой регистр будет принят)
-const HINT_TEXT = "Подсказка: как тебя зовут? 😉";
+    /* =================== PASSWORD SETTINGS (каждый раз + любой регистр) =================== */
+    const SITE_PASSWORD = "Алина";
+    const HINT_TEXT = "Подсказка: как тебя зовут? 😉";
 
-const gate = document.getElementById('gate');
-const gateCard = document.getElementById('gateCard');
-const spinner = document.getElementById('spinner');
-const bar = document.getElementById('bar');
-const pct = document.getElementById('pct');
-const passwordBlock = document.getElementById('passwordBlock');
-const passInput = document.getElementById('passInput');
-const enterBtn = document.getElementById('enterBtn');
-const hint = document.getElementById('hint');
-const error = document.getElementById('error');
+    const gate = document.getElementById('gate');
+    const gateCard = document.getElementById('gateCard');
+    const spinner = document.getElementById('spinner');
+    const bar = document.getElementById('bar');
+    const pct = document.getElementById('pct');
+    const passwordBlock = document.getElementById('passwordBlock');
+    const passInput = document.getElementById('passInput');
+    const enterBtn = document.getElementById('enterBtn');
+    const hint = document.getElementById('hint');
+    const error = document.getElementById('error');
 
-hint.textContent = HINT_TEXT;
+    hint.textContent = HINT_TEXT;
 
-function openSite(){
-  gate.style.display = 'none';
-}
+    function openSite(){
+      gate.style.display = 'none';
+    }
 
-function fail(){
-  error.style.display = 'block';
-  gateCard.classList.remove('shake');
-  void gateCard.offsetWidth;
-  gateCard.classList.add('shake');
-  passInput.focus();
-  passInput.select();
-}
+    function fail(){
+      error.style.display = 'block';
+      gateCard.classList.remove('shake');
+      void gateCard.offsetWidth;
+      gateCard.classList.add('shake');
+      passInput.focus();
+      passInput.select();
+    }
 
-function norm(s){
-  return (s || "")
-    .trim()
-    .toLowerCase()
-    .replaceAll("ё","е"); // на всякий случай, чтобы ё/е не ломали
-}
+    function norm(s){
+      return (s || "")
+        .trim()
+        .toLowerCase()
+        .replaceAll("ё","е");
+    }
 
-function tryEnter(){
-  const v = norm(passInput.value);
-  const p = norm(SITE_PASSWORD);
+    function tryEnter(){
+      const v = norm(passInput.value);
+      const p = norm(SITE_PASSWORD);
 
-  if (v === p){
-    // НЕ сохраняем в localStorage — пароль будет спрашиваться каждый раз
-    openSite();
-  } else {
-    fail();
-  }
-}
+      if (v === p){
+        // НЕ сохраняем — пароль будет спрашиваться каждый раз
+        openSite();
+      } else {
+        fail();
+      }
+    }
 
-enterBtn.addEventListener('click', tryEnter);
-passInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') tryEnter();
-});
+    enterBtn.addEventListener('click', tryEnter);
+    passInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') tryEnter();
+    });
 
-// Всегда показываем экран загрузки и затем пароль (каждый раз)
-let progress = 0;
-const t = setInterval(() => {
-  progress = Math.min(100, progress + Math.floor(Math.random()*10) + 5);
-  bar.style.width = progress + '%';
-  pct.textContent = `Загружаю… ${progress}%`;
+    // Всегда показываем экран загрузки и затем пароль (каждый раз)
+    let progress = 0;
+    const t = setInterval(() => {
+      progress = Math.min(100, progress + Math.floor(Math.random()*10) + 5);
+      bar.style.width = progress + '%';
+      pct.textContent = `Загружаю… ${progress}%`;
 
-  if (progress >= 100){
-    clearInterval(t);
-    spinner.style.display = 'none';
-    pct.textContent = "Готово! Введи пароль ↓";
-    passwordBlock.classList.remove('hidden');
-    passInput.focus();
-  }
-}, 220);
+      if (progress >= 100){
+        clearInterval(t);
+        spinner.style.display = 'none';
+        pct.textContent = "Готово! Введи пароль ↓";
+        passwordBlock.classList.remove('hidden');
+        passInput.focus();
+      }
+    }, 220);
 
-    /* =================== ORIGINAL LOGIC =================== */
+    /* =================== YOUR ORIGINAL LOGIC =================== */
     const yesBtn = document.getElementById('yesBtn');
     const noBtn  = document.getElementById('noBtn');
 
@@ -597,8 +608,8 @@ const t = setInterval(() => {
     });
 
     noBtn.addEventListener('touchstart', (e) => {
-      const t = e.touches[0];
-      moveNoAway(t.clientX, t.clientY);
+      const tt = e.touches[0];
+      moveNoAway(tt.clientX, tt.clientY);
       e.preventDefault();
     }, { passive:false });
 
@@ -607,6 +618,7 @@ const t = setInterval(() => {
       e.preventDefault();
     });
 
+    /* ================== PARTY MODE (Djokovic + Hearts) ================== */
     const djokovicGifs = [
       "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZTN0czExcHFvNHFkMmt3emJ1bXRmYm83M3RjamViNHI2eDBmZjZsaiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/mPIROKHWddyuIMQHVu/giphy.gif",
       "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjFhdjQ3bXRkMDJsa29zMnUwa3lpZ3N2ZWhjZ3pmYTJ6d3RsMTNjdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/2vBIaOa6X7VGQOOeet/giphy.gif",
@@ -757,4 +769,3 @@ const t = setInterval(() => {
   </script>
 </body>
 </html>
-
